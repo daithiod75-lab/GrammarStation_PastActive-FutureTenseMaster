@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文法マスター - 双方向バイリンガル学習アプリ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Comic Neue for playful educational style -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        playful: ['Comic Neue', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        arcade: {
+                            bg: '#0f172a',
+                            panel: '#1e293b',
+                            accent: '#f59e0b',
+                            neon: '#10b981',
+                            text: '#f8fafc'
+                        },
+                        pastelPink: '#fecdd3',
+                        pastelPurple: '#f3e8ff',
+                        pastelYellow: '#fef9c3',
+                        pastelGreen: '#dcfce7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow {
+            box-shadow: 0 8px 0px 0px rgba(0, 0, 0, 0.08);
+        }
+        .active-card {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -8px rgba(14, 165, 233, 0.4);
+        }
+        .word-chip {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .word-chip:hover {
+            transform: scale(1.05) translateY(-2px);
+        }
+        .correct-bg {
+            animation: pulseSuccess 1s ease;
+        }
+        @keyframes pulseSuccess {
+            0% { background-color: rgba(220, 252, 231, 0.6); }
+            50% { background-color: rgba(74, 222, 128, 0.4); }
+            100% { background-color: rgba(220, 252, 231, 0.6); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-700">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="bg-white border-b-4 border-brand-100 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-white p-2.5 rounded-2xl shadow-lg shadow-brand-500/30 flex items-center justify-center transform hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black font-playful tracking-tight text-slate-800">GRAMMAR <span class="text-brand-500">MASTER</span></h1>
+                    <p class="text-xs text-slate-400 font-semibold tracking-wide">双方向バイリンガル英文法システム</p>
+                </div>
+            </div>
+
+            <!-- Stats Badge Dashboard -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Stars Counter -->
+                <div class="bg-amber-50 border-2 border-amber-200 text-amber-700 px-2 sm:px-3 py-1.5 rounded-2xl flex items-center space-x-1 sm:space-x-2 font-bold shadow-sm">
+                    <i class="fa-solid fa-star text-amber-400 animate-pulse"></i>
+                    <span id="star-count" class="font-playful text-sm sm:text-lg">0</span>
+                    <span class="text-xs text-amber-600/70 hidden md:inline">獲得スター</span>
+                </div>
+                <!-- Global Level Indicator -->
+                <div class="bg-emerald-50 border-2 border-emerald-200 text-emerald-700 px-2 sm:px-3 py-1.5 rounded-2xl flex items-center space-x-1 sm:space-x-2 font-bold shadow-sm">
+                    <i class="fa-solid fa-trophy text-emerald-500"></i>
+                    <span id="progress-percent" class="font-playful text-sm sm:text-lg">0%</span>
+                </div>
+                <!-- Sound Option -->
+                <button id="tts-toggle-btn" onclick="toggleAudio()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 border-slate-200 hover:bg-slate-50 flex items-center justify-center transition-colors text-slate-600" title="音声合成をミュート/有効化">
+                    <i id="tts-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY SECTION -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        
+        <!-- UNIT SWITCHER TABS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Unit 7 Tab Button -->
+            <button onclick="switchUnit(7)" id="btn-unit-7" class="group relative overflow-hidden bg-white hover:bg-sky-50/50 p-6 rounded-3xl border-4 border-brand-500 transition-all duration-300 text-left custom-shadow active-card">
+                <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-10 group-hover:scale-110 transition-transform text-brand-500">
+                    <i class="fa-solid fa-clock-rotate-left text-9xl"></i>
+                </div>
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="bg-brand-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest font-playful shadow-md shadow-brand-500/20">UNIT 7</span>
+                        <h2 class="text-xl font-black mt-2 text-slate-800">過去進行形</h2>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Past Continuous Tense</p>
+                    </div>
+                    <div id="unit-7-badge" class="bg-brand-100 text-brand-600 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg">
+                        0%
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center space-x-2 text-xs font-bold text-brand-600">
+                    <span>「過去のその瞬間」を表現しよう！</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </button>
+
+            <!-- Unit 8 Tab Button -->
+            <button onclick="switchUnit(8)" id="btn-unit-8" class="group relative overflow-hidden bg-white hover:bg-violet-50/50 p-6 rounded-3xl border-4 border-slate-200 transition-all duration-300 text-left custom-shadow">
+                <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-10 group-hover:scale-110 transition-transform text-violet-500">
+                    <i class="fa-solid fa-rocket text-9xl"></i>
+                </div>
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="bg-slate-500 group-hover:bg-violet-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest font-playful shadow-md transition-colors">UNIT 8</span>
+                        <h2 class="text-xl font-black mt-2 text-slate-800">未来のことを表す表現</h2>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Future Expressions & will / be going to</p>
+                    </div>
+                    <div id="unit-8-badge" class="bg-slate-100 text-slate-600 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg">
+                        0%
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center space-x-2 text-xs font-bold text-slate-400 group-hover:text-violet-600">
+                    <span>未来の予測・計画・未来進行形をマスター！</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </button>
+
+            <!-- Time Attack Challenge Tab Button -->
+            <button onclick="switchUnit('time-attack')" id="btn-unit-time-attack" class="group relative overflow-hidden bg-white hover:bg-amber-50/50 p-6 rounded-3xl border-4 border-slate-200 transition-all duration-300 text-left custom-shadow">
+                <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-10 group-hover:scale-110 transition-transform text-amber-500">
+                    <i class="fa-solid fa-stopwatch text-9xl"></i>
+                </div>
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest font-playful shadow-md">SPECIAL</span>
+                        <h2 class="text-xl font-black mt-2 text-slate-800">タイムアタック!</h2>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Classroom Time Attack Quiz</p>
+                    </div>
+                    <div id="time-attack-badge" class="bg-amber-100 text-amber-700 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-base">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center space-x-2 text-xs font-bold text-slate-400 group-hover:text-amber-600">
+                    <span>25秒制限！最高得点を目指そう！</span>
+                    <i class="fa-solid fa-circle-play group-hover:translate-x-1 transition-transform text-amber-500"></i>
+                </div>
+            </button>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="bg-slate-200 h-4 w-full rounded-full overflow-hidden mb-8 shadow-inner border border-slate-300/30">
+            <div id="global-progress-bar" class="bg-gradient-to-r from-brand-400 to-emerald-400 h-full w-0 transition-all duration-500 ease-out"></div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- UNIT 7 PANEL -->
+        <!-- ============================================ -->
+        <div id="unit-7-panel" class="space-y-8">
+            
+            <!-- GRAMMAR CARD: Past Continuous -->
+            <div class="bg-white rounded-3xl border-4 border-brand-200 p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-slate-100 pb-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-brand-100 text-brand-600 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">英文法ルール：過去進行形</h3>
+                            <p class="text-xs text-slate-500">Grammar Rules: Past Continuous</p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full text-xs font-bold text-center">
+                        💡 〈was / were ＋ 現在分詞 (動詞-ing)〉
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <p class="text-sm leading-relaxed text-slate-600">
+                            過去進行形は、過去のある瞬間に「ちょうど～している真っ最中だった」ことを表す時に使います。
+                        </p>
+                        <div class="bg-brand-50/50 rounded-2xl p-4 border-2 border-brand-100 space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-brand-500 text-white font-bold text-xs px-2 py-0.5 rounded">基本ルール</span>
+                                <span class="font-mono font-bold text-brand-700 text-sm md:text-base">主語 + was/were + 動詞-ing</span>
+                            </div>
+                            <ul class="text-xs text-slate-500 list-disc list-inside space-y-1">
+                                <li>主語が単数 (<strong class="text-brand-600">I, He, She, It, Andy</strong> など) → <strong class="text-brand-600">was</strong></li>
+                                <li>主語が複数・You (<strong class="text-brand-600">We, They, You, Ken & Beth</strong> など) → <strong class="text-brand-600">were</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50/30 border-2 border-amber-100 rounded-2xl p-4 space-y-3">
+                        <span class="bg-amber-400 text-amber-950 font-black text-xs px-2.5 py-1 rounded-full">例文 / Example</span>
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="speakText('What were you doing around four yesterday?')" class="text-slate-400 hover:text-brand-500 transition-colors text-xs">
+                                        <i class="fa-solid fa-volume-high"></i>
+                                    </button>
+                                    <p class="font-bold text-slate-800 text-sm">A: What <span class="text-brand-500 underline decoration-2">were you doing</span> around four yesterday?</p>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-5">（あなたは昨日，4時ごろ何をしていましたか）</p>
+                            </div>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="speakText('I was playing tennis with John.')" class="text-slate-400 hover:text-brand-500 transition-colors text-xs">
+                                        <i class="fa-solid fa-volume-high"></i>
+                                    </button>
+                                    <p class="font-bold text-slate-800 text-sm">B: I <span class="text-brand-500 underline decoration-2">was playing</span> tennis with John.</p>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-5">（私はジョンとテニスをしていました）</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE A: Suspect Alibi Investigation -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-rose-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">A - ALIBI GAME</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">事件関係者のアリバイ崩し！</h3>
+                            <p class="text-xs text-slate-400">過去進行形（was/were ＋ 動詞-ing）を使って容疑者たちのアリバイ文を完成させましょう。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全6問</span>
+                </div>
+                
+                <p class="text-sm text-slate-600 bg-rose-50/50 p-4 border border-rose-100 rounded-2xl">
+                    👮 <strong>ストーリー：</strong> 昨日、町で事件が起こりました。警察官が事件関係者にアリバイを聞いています。Andyの例にならい、（　）内の動詞を正しい過去進行形に変えてアリバイ文を完成させましょう！
+                </p>
+
+                <!-- Suspect Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Andy Example (Static Card) -->
+                    <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 bg-slate-200 text-slate-700 text-xs px-3 py-1 font-black rounded-bl-2xl">
+                            お手本
+                        </div>
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="text-4xl">👨‍⚕️</span>
+                            <div>
+                                <h4 class="font-black text-slate-800">Andy</h4>
+                                <p class="text-xs text-slate-400">Dr. House's clinic</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 italic mb-2">"I was meeting with Dr. House."</p>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
+                            Andy: I <strong>was meeting</strong> with Dr. House at the hospital. <span class="text-slate-400 font-bold">(meet)</span>
+                        </div>
+                    </div>
+
+                    <!-- Tom -->
+                    <div id="card-tom" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">🛠️</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Tom</h4>
+                                    <p class="text-xs text-slate-400">ガレージ / Garage</p>
+                                </div>
+                            </div>
+                            <span id="badge-tom" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">兄［弟］の自転車を修理していました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Tom: I</span>
+                                <input type="text" id="input-tom" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>my brother’s bike.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( repair )</span>
+                                <button onclick="checkAlibi('tom')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Yuka -->
+                    <div id="card-yuka" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">📖</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Yuka</h4>
+                                    <p class="text-xs text-slate-400">自分の部屋 / Her room</p>
+                                </div>
+                            </div>
+                            <span id="badge-yuka" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">自分の部屋で小説を読んでいました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Yuka: I</span>
+                                <input type="text" id="input-yuka" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>a novel.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( read )</span>
+                                <button onclick="checkAlibi('yuka')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ken -->
+                    <div id="card-ken" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">📸</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Ken</h4>
+                                    <p class="text-xs text-slate-400">パーティー / Party</p>
+                                </div>
+                            </div>
+                            <span id="badge-ken" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">パーティーで写真を撮っていました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Ken: I</span>
+                                <input type="text" id="input-ken" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>some pictures.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( take )</span>
+                                <button onclick="checkAlibi('ken')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shelly -->
+                    <div id="card-shelly" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">🇯🇵</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Shelly</h4>
+                                    <p class="text-xs text-slate-400">姉/妹と / With Sister</p>
+                                </div>
+                            </div>
+                            <span id="badge-shelly" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">姉［妹］と日本語を勉強していました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Shelly: I</span>
+                                <input type="text" id="input-shelly" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>Japanese.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( study )</span>
+                                <button onclick="checkAlibi('shelly')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Beth -->
+                    <div id="card-beth" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">🌳</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Beth</h4>
+                                    <p class="text-xs text-slate-400">公園で / Park</p>
+                                </div>
+                            </div>
+                            <span id="badge-beth" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">ケイトと公園を散歩していました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Beth: I</span>
+                                <input type="text" id="input-beth" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>in the park.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( walk )</span>
+                                <button onclick="checkAlibi('beth')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linda -->
+                    <div id="card-linda" class="bg-white border-2 border-slate-200 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">🚲</span>
+                                <div>
+                                    <h4 class="font-black text-slate-800">Linda</h4>
+                                    <p class="text-xs text-slate-400">川沿い / River</p>
+                                </div>
+                            </div>
+                            <span id="badge-linda" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle-question text-lg"></i></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">川沿いを自転車に乗っていました</p>
+                        <div class="space-y-2">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                                <span>Linda: I</span>
+                                <input type="text" id="input-linda" placeholder="答えを入力してください" class="bg-slate-50 border-2 border-slate-300 focus:border-brand-500 focus:bg-white rounded-lg px-2 py-1 text-sm outline-none w-44 text-center font-bold tracking-wide transition-all">
+                                <span>a bicycle.</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-brand-500">( ride )</span>
+                                <button onclick="checkAlibi('linda')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">確認する</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE B: Fill-in-the-blanks with Translation -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-brand-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">B - TRANSLATION DRILL</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">B - 適語補充トレーニング</h3>
+                            <p class="text-xs text-slate-400">次の日本語の意味に合うように、空欄に適する英語を入力してください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全8問</span>
+                </div>
+
+                <!-- B Exercises list -->
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-1">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">1</span>
+                                <span class="text-slate-600 font-bold">私はそのときミワに手紙を書いていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>I</span>
+                                <input type="text" id="b-1-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-1-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>a letter to Miwa then.</span>
+                                <button onclick="speakText('I was writing a letter to Miwa then.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(1, ['was', 'writing'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-2">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">2</span>
+                                <span class="text-slate-600 font-bold">彼女は妹さんのためにバッグを作っていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>She</span>
+                                <input type="text" id="b-2-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-2-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>a bag for her sister.</span>
+                                <button onclick="speakText('She was making a bag for her sister.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(2, ['was', 'making'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">3</span>
+                                <span class="text-slate-600 font-bold">昨日の午前7時に，兄と私は家を掃除していた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>My brother and I</span>
+                                <input type="text" id="b-3-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-3-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>our house at 7 a.m. yesterday.</span>
+                                <button onclick="speakText('My brother and I were cleaning our house at 7 a.m. yesterday.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(3, ['were', 'cleaning'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">4</span>
+                                <span class="text-slate-600 font-bold">私たちはそのときテレビで野球の試合を見ていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>We</span>
+                                <input type="text" id="b-4-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-4-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>a baseball game on TV then.</span>
+                                <button onclick="speakText('We were watching a baseball game on TV then.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(4, ['were', 'watching'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-5">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">5</span>
+                                <span class="text-slate-600 font-bold">彼らは３時に，その店でハンバーガーを食べていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>They</span>
+                                <input type="text" id="b-5-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-5-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>hamburgers in the shop at three.</span>
+                                <button onclick="speakText('They were eating hamburgers in the shop at three.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkBWithAlternatives(5, ['were', ['eating', 'having']])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-6">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">6</span>
+                                <span class="text-slate-600 font-bold">スミス先生はそのとき子どもたちに英語を教えていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>Mr. Smith</span>
+                                <input type="text" id="b-6-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-6-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>English to children at that time.</span>
+                                <button onclick="speakText('Mr. Smith was teaching English to children at that time.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(6, ['was', 'teaching'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-7">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">7</span>
+                                <span class="text-slate-600 font-bold">私が部屋に入ったとき，生徒たちはいすを運んでいた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>The students</span>
+                                <input type="text" id="b-7-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-7-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>the chairs when I entered the room.</span>
+                                <button onclick="speakText('The students were carrying the chairs when I entered the room.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(7, ['were', 'carrying'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-b-8">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">8</span>
+                                <span class="text-slate-600 font-bold">私が自分のコンピュータが必要だったとき，弟がそれを使っていた。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>My brother</span>
+                                <input type="text" id="b-8-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="b-8-b" placeholder="空欄②" class="w-32 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>my computer when I needed it.</span>
+                                <button onclick="speakText('My brother was using my computer when I needed it.')" class="text-slate-400 hover:text-brand-500 text-xs self-center" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkB(8, ['was', 'using'])" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE C: Past Simple -> Past Continuous Rewrite Game -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">C - TRANSFORM CHALLENGE</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">C - 過去進行形への書きかえ</h3>
+                            <p class="text-xs text-slate-400">元の英文を過去進行形にし、最後に when he came home（彼が帰宅したとき）を付け加えた一文を完成させてください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全7問</span>
+                </div>
+                
+                <p class="text-sm text-slate-600 bg-amber-50/50 p-4 border border-amber-200 rounded-2xl">
+                    🔄 <strong>ルール：</strong> 提示された文を「過去進行形」に直し、最後に <strong class="text-brand-600">when he came home</strong> (彼が帰宅したとき) を付け加えた一文を記述（ピリオドまで正確に）してください。
+                </p>
+
+                <div class="space-y-6">
+                    <!-- Unit 7 C-1 -->
+                    <div id="wrapper-c-1" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">1. I did my homework. (私は宿題をした)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、私は宿題をしていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-1" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(1, 'I was doing my homework when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-2 -->
+                    <div id="wrapper-c-2" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">2. Lisa sang a song. (リサは歌を歌った)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、リサは歌を歌っていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-2" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(2, 'Lisa was singing a song when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-3 -->
+                    <div id="wrapper-c-3" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">3. His brothers played a video game. (彼の兄弟たちはテレビゲームをした)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、彼の兄弟たちはテレビゲームをしていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-3" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(3, 'His brothers were playing a video game when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-4 -->
+                    <div id="wrapper-c-4" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">4. Yoko and her brother washed the dishes. (ヨウコと彼女の兄［弟］は皿を洗った)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、ヨウコと彼女の兄［弟］は皿を洗っていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-4" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(4, 'Yoko and her brother were washing the dishes when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-5 -->
+                    <div id="wrapper-c-5" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">5. His grandparents prepared for the trip. (彼の祖父母は旅行の準備をした)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、彼の祖父母は旅行の準備をしていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-5" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(5, 'His grandparents were preparing for the trip when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-6 -->
+                    <div id="wrapper-c-6" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">6. George fixed the computer. (ジョージはコンピュータを修理した)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、ジョージはコンピュータを修理していた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-6" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(6, 'George was fixing the computer when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Unit 7 C-7 -->
+                    <div id="wrapper-c-7" class="border-2 border-slate-100 p-4 rounded-2xl bg-slate-50/40">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-bold text-slate-600">7. His uncle waited for him. (彼のおじさんは彼を待った)</span>
+                            <div class="flex items-center space-x-2 text-xs text-amber-600 font-bold">
+                                <span>→ 彼が帰宅したとき、彼のおじさんは彼を待っていた。</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="input-c-7" placeholder="書きかえた英文をここに入力" class="flex-grow bg-white border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono tracking-wide font-bold outline-none focus:border-brand-500 transition-colors placeholder:text-slate-300">
+                            <button onclick="checkC(7, 'His uncle was waiting for him when he came home.')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md">確認する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE D: Word Unscrambler (Click to Order) -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-purple-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful font-playful">D - WORD SCRAMBLER</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">D - 言葉並べ替えゲーム</h3>
+                            <p class="text-xs text-slate-400">英語のブロックを正しい順番にクリックして、日本語に合う英文を完成させてください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全6問</span>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Q1 -->
+                    <div class="space-y-3" id="scramble-block-7d-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">1. あなたが訪ねてきたとき，私は風呂に入っていた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... when you visited me.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-1"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-1"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-1')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-1', 'I was taking a bath')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="space-y-3" id="scramble-block-7d-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">2. 私が彼女を見たとき，彼女は何かを探していた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">When I saw her, ...</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-2"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-2"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-2')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-2', 'she was looking for something')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="space-y-3" id="scramble-block-7d-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">3. 私の姉は昨夜10時に，電話で話をしていた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... at ten last night.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-3"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-3"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-3')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-3', 'my sister was talking on the phone')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="space-y-3" id="scramble-block-7d-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">4. 彼らはそのときその壁を塗っていた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... time.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-4"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-4"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-4')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-4', 'they were painting the wall at that')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="space-y-3" id="scramble-block-7d-5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">5. 私がその建物を通り過ぎたとき，１人の男性が門を閉めていた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... when I passed by the building.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-5"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-5"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-5')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-5', 'a man was closing the gate')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="space-y-3" id="scramble-block-7d-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">6. フリーマーケットで古着を売っている人もいた。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... at the flea market.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-7d-6"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-7d-6"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('7d-6')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('7d-6', 'some people were selling their old clothes')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ============================================ -->
+        <!-- UNIT 8 PANEL -->
+        <!-- ============================================ -->
+        <div id="unit-8-panel" class="space-y-8 hidden">
+            
+            <!-- GRAMMAR CARD: Future Expressions -->
+            <div class="bg-white rounded-3xl border-4 border-violet-200 p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-slate-100 pb-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-violet-100 text-violet-600 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">英文法ルール：未来のことを表す表現</h3>
+                            <p class="text-xs text-slate-500">Grammar Rules: Future Expressions (will vs be going to)</p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full text-xs font-bold text-center">
+                        🔮 will ＆ be going to / 未来進行形
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-violet-50/50 rounded-2xl p-4 border border-violet-100 space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-violet-500 text-white font-bold text-xs px-2 py-0.5 rounded">will</span>
+                                <span class="font-mono font-bold text-violet-800 text-sm md:text-base">will + 動詞の原形</span>
+                            </div>
+                            <p class="text-xs text-slate-600">
+                                <strong>「きっと～だろう」という予測・その場の決意。</strong><br>
+                                話者が「きっとそうなると思っていること」を表現します。
+                            </p>
+                        </div>
+
+                        <div class="bg-pink-50/50 rounded-2xl p-4 border border-pink-100 space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-pink-500 text-white font-bold text-xs px-2 py-0.5 rounded">be going to</span>
+                                <span class="font-mono font-bold text-pink-800 text-sm md:text-base">be going to + 動詞の原形</span>
+                            </div>
+                            <p class="text-xs text-slate-600">
+                                <strong>「～するつもりだ」という前もって決めていた計画。</strong><br>
+                                すでに主語が「そうすると心に決めていること」を表現します。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50/30 border-2 border-amber-100 rounded-2xl p-4 flex flex-col justify-between">
+                        <div>
+                            <span class="bg-amber-400 text-amber-950 font-black text-xs px-2.5 py-1 rounded-full">未来進行形 / Future Continuous</span>
+                            <div class="mt-3 space-y-2 text-xs text-slate-600">
+                                <p class="font-bold text-slate-800 text-sm">〈will be ＋ 現在分詞(動詞-ing)〉</p>
+                                <p>未来のある時点で「～している最中だろう」という予測を表します。</p>
+                                <div class="bg-white p-3 rounded-xl border border-amber-200 mt-2">
+                                    <p class="font-bold text-slate-800">He <span class="text-violet-600 font-mono">will be playing</span> soccer.</p>
+                                    <p class="text-slate-500 text-[11px] mt-1">（彼は明日のこの時間には，サッカーをしているだろう）</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIT 8 EXERCISE 1: Future statements -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-violet-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">8-1 DRILL</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">8-1 未来の文（肯定文）</h3>
+                            <p class="text-xs text-slate-400">日本語の意味に合うように、空欄に適する英語を入力してください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全7問</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-1">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">1</span>
+                                <span class="text-slate-600 font-bold">ルーシーはそのDVDを見るだろう。 ( watch )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>Lucy</span>
+                                <input type="text" id="8-1-1-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-1-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>the DVD.</span>
+                                <button onclick="speakText('Lucy will watch the DVD.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-1', ['will', 'watch'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-2">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">2</span>
+                                <span class="text-slate-600 font-bold">私たちは来週，引っ越すつもりだ。 ( move )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>We’re</span>
+                                <input type="text" id="8-1-2-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-2-b" placeholder="空欄②" class="w-20 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-2-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>next week.</span>
+                                <button onclick="speakText('We are going to move next week.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-2', ['going', 'to', 'move'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">3</span>
+                                <span class="text-slate-600 font-bold">私は明日，あなたたちに自分の考えを説明するつもりだ。 ( explain )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>I’m</span>
+                                <input type="text" id="8-1-3-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-3-b" placeholder="空欄②" class="w-20 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-3-c" placeholder="空欄③" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>my idea to you tomorrow.</span>
+                                <button onclick="speakText('I am going to explain my idea to you tomorrow.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-3', ['going', 'to', 'explain'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">4</span>
+                                <span class="text-slate-600 font-bold">あの旅行者は簡単にバス停を見つけるだろう。 ( find )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>That tourist</span>
+                                <input type="text" id="8-1-4-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-4-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>the bus stop easily.</span>
+                                <button onclick="speakText('That tourist will find the bus stop easily.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-4', ['will', 'find'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-5">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">5</span>
+                                <span class="text-slate-600 font-bold">ブラウンさんは５月に北海道を訪れるつもりだ。 ( visit )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>Mr. Brown</span>
+                                <input type="text" id="8-1-5-a" placeholder="空欄①" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>to</span>
+                                <input type="text" id="8-1-5-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>Hokkaido in May.</span>
+                                <button onclick="speakText('Mr. Brown is going to visit Hokkaido in May.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-5', ['is going', 'visit'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-6">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">6</span>
+                                <span class="text-slate-600 font-bold">ジャックと私は来週，馬に乗るつもりだ。 ( ride )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>Jack and I</span>
+                                <input type="text" id="8-1-6-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>going</span>
+                                <input type="text" id="8-1-6-b" placeholder="空欄②" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>horses next week.</span>
+                                <button onclick="speakText('Jack and I are going to ride horses next week.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-6', ['are', 'to ride'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-1-7">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">7</span>
+                                <span class="text-slate-600 font-bold">すべてはうまくいくだろう。 ( go )</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <span>Everything</span>
+                                <input type="text" id="8-1-7-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <input type="text" id="8-1-7-b" placeholder="空欄②" class="w-20 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>well.</span>
+                                <button onclick="speakText('Everything will go well.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-1-7', ['will', 'go'])" class="bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIT 8 EXERCISE 2: Will Questions -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-rose-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">8-2 DRILL</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">8-2 will を使った疑問文</h3>
+                            <p class="text-xs text-slate-400">日本語の意味に合うように、空欄に適する英語を入力してください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全3問</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-2-1">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">1</span>
+                                <span class="text-slate-600 font-bold">今週末は雨が降るでしょうか。― はい，降るでしょう。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-2-1-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>it</span>
+                                <input type="text" id="8-2-1-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>this weekend? ─ Yes, it</span>
+                                <input type="text" id="8-2-1-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Will it rain this weekend? Yes, it will.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-2-1', ['Will', 'rain', 'will'])" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-2-2">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">2</span>
+                                <span class="text-slate-600 font-bold">エミは彼にチョコレートをあげるでしょうか。― はい，あげるでしょう。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-2-2-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>Emi</span>
+                                <input type="text" id="8-2-2-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>him chocolate? ─ Yes, she</span>
+                                <input type="text" id="8-2-2-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Will Emi give him chocolate? Yes, she will.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-2-2', ['Will', 'give', 'will'])" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-2-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">3</span>
+                                <span class="text-slate-600 font-bold">コウジはふるさとに戻るでしょうか。― いいえ，戻らないでしょう。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-2-3-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>Koji</span>
+                                <input type="text" id="8-2-3-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>to his hometown? ─ No, he</span>
+                                <input type="text" id="8-2-3-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Will Koji return to his hometown? No, he won\'t.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-2-3', ['Will', 'return', 'won\'t'])" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIT 8 EXERCISE 3: be going to Questions -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-emerald-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful font-playful">8-3 DRILL</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">8-3 be going to を使った疑問文</h3>
+                            <p class="text-xs text-slate-400">日本語の意味に合うように、空欄に適する英語を入力してください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全3問</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-3-1">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">1</span>
+                                <span class="text-slate-600 font-bold">あなたはパリで美術を勉強するつもりですか。― はい，そのつもりです。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-3-1-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>you</span>
+                                <input type="text" id="8-3-1-b" placeholder="空欄②" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>study art in Paris? ─ Yes, I</span>
+                                <input type="text" id="8-3-1-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Are you going to study art in Paris? Yes, I am.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-3-1', ['Are', 'going to', 'am'])" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-3-2">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">2</span>
+                                <span class="text-slate-600 font-bold">トムは教師になるつもりですか。― いいえ，そのつもりはありません。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-3-2-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>Tom</span>
+                                <input type="text" id="8-3-2-b" placeholder="空欄②" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>to</span>
+                                <input type="text" id="8-3-2-c" placeholder="空欄③" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>a teacher? ─ No, he</span>
+                                <input type="text" id="8-3-2-d" placeholder="空欄④" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Is Tom going to be a teacher? No, he isn\'t.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="check832()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4" id="row-8-3-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2 text-xs font-bold text-slate-400">
+                                <span class="bg-slate-200 text-slate-700 w-5 h-5 rounded-md inline-flex items-center justify-center">3</span>
+                                <span class="text-slate-600 font-bold">科学者たちはその実験を始めるつもりですか。― いいえ，そのつもりはありません。</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 font-mono text-base font-bold text-slate-800">
+                                <input type="text" id="8-3-3-a" placeholder="空欄①" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>the scientists</span>
+                                <input type="text" id="8-3-3-b" placeholder="空欄②" class="w-28 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>start the experiment? ─ No, they</span>
+                                <input type="text" id="8-3-3-c" placeholder="空欄③" class="w-24 border-b-2 border-slate-300 bg-transparent text-center focus:border-brand-500 outline-none placeholder:text-slate-300">
+                                <span>.</span>
+                                <button onclick="speakText('Are the scientists going to start the experiment? No, they aren\'t.')" class="text-slate-400 hover:text-brand-500 text-xs" title="読み上げる"><i class="fa-solid fa-volume-high"></i></button>
+                            </div>
+                        </div>
+                        <button onclick="checkMultipleBlanks('8-3-3', ['Are', 'going to', 'aren\'t'])" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all self-stretch md:self-auto">確認する</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIT 8 EXERCISE 4: Future Continuous Unscrambler -->
+            <div class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-indigo-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase font-playful">8-4 FUTURE CONTINUOUS</span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-800">8-4 未来進行形・言葉並べ替え</h3>
+                            <p class="text-xs text-slate-400">英語のブロックを正しい順番にクリックして、日本語に合う英文を完成させてください。</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-300 font-bold text-sm hidden md:inline">全4問</span>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Q1 -->
+                    <div class="space-y-3" id="scramble-block-8-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">1. 明日のこの時間には，私はステージで踊っているだろう。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... at this time tomorrow.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-8-1"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-8-1"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('8-1')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('8-1', 'I will be dancing on the stage')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="space-y-3" id="scramble-block-8-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">2. 3時ごろには，ビルはプールで泳いでいるだろう。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... around three.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-8-2"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-8-2"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('8-2')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('8-2', 'Bill will be swimming in the pool')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="space-y-3" id="scramble-block-8-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">3. 明日の10時には，学生たちはその試験を受けているだろう。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... ten tomorrow.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-8-3"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-8-3"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('8-3')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('8-3', 'the students will be taking the exam at')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="space-y-3" id="scramble-block-8-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-600">4. 今度の土曜日のこの時間には，私たちは祭りの準備をしているだろう。</span>
+                            <span class="text-xs font-mono font-bold text-indigo-500">... next Saturday.</span>
+                        </div>
+                        <div class="border-2 border-dashed border-indigo-200 bg-indigo-50/20 rounded-2xl p-4 flex flex-wrap gap-2 min-h-[50px] items-center" id="workspace-8-4"></div>
+                        <div class="flex flex-wrap gap-2" id="pool-8-4"></div>
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="resetScramble('8-4')" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-arrow-rotate-left"></i> やり直す</button>
+                            <button onclick="checkScramble('8-4', 'we will be preparing for the festival at this time')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">回答を確認する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- TIME ATTACK MODE PANEL -->
+        <!-- ============================================ -->
+        <div id="unit-time-attack-panel" class="space-y-8 hidden">
+            
+            <!-- EXPLICIT RULES & WHITEBOARD INSTRUCTIONS BOARD -->
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-3xl p-6 md:p-8 shadow-lg relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 translate-x-10 translate-y-10 opacity-10 text-9xl">
+                    <i class="fa-solid fa-chalkboard"></i>
+                </div>
+                <h3 class="text-2xl font-black font-playful mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+                    授業内ルール＆提出課題のご案内
+                </h3>
+                <div class="space-y-3 text-sm md:text-base leading-relaxed bg-black/10 p-4 rounded-2xl border border-white/20">
+                    <p class="font-bold text-yellow-200">
+                        👨‍🏫 学生のみなさんへの指示：
+                    </p>
+                    <ul class="list-decimal list-inside space-y-2 text-white/90">
+                        <li>このタイムアタッククイズを<strong class="underline decoration-yellow-300 decoration-2 font-black">必ず3回以上クリア</strong>してください。</li>
+                        <li>各チャレンジ終了時に表示される<strong class="underline decoration-yellow-300 decoration-2 font-black">スコアを毎回メモ用紙に記録</strong>してください。</li>
+                        <li>3回分の挑戦が終わったら、黒板またはホワイトボードの<strong class="underline decoration-yellow-300 decoration-2 font-black">自分の出席番号の横に3回分の獲得得点を書き出してください！</strong></li>
+                    </ul>
+                    <div class="mt-4 pt-3 border-t border-white/20 text-xs text-white/70 flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>各問題は25秒制限！早く答えるほどボーナス（最高5点〜1点）を獲得できます！</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIME ATTACK ACTIVE GAME BOARD -->
+            <div class="bg-slate-900 border-4 border-amber-400 rounded-3xl p-6 md:p-8 text-slate-100 shadow-2xl relative">
+                
+                <!-- Lobby State -->
+                <div id="ta-lobby" class="text-center py-10 space-y-6">
+                    <div class="w-24 h-24 bg-amber-500/10 text-amber-400 border-4 border-amber-400 rounded-full flex items-center justify-center mx-auto text-4xl animate-pulse">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-black text-amber-400">タイムアタックモード</h4>
+                        <p class="text-slate-400 text-sm mt-1">過去進行形＆未来形 混合スピードクイズ (全10問)</p>
+                    </div>
+                    <button onclick="startQuiz()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-lg px-8 py-4 rounded-2xl transform active:scale-95 transition-all shadow-lg shadow-amber-500/20 inline-flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play"></i> クイズに挑戦する！
+                    </button>
+                </div>
+
+                <!-- Active Quiz State -->
+                <div id="ta-game" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md" id="ta-q-num">Q 1/10</span>
+                            <span class="text-slate-400 text-sm">タイムアタック挑戦中</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <p class="text-[10px] text-slate-400">現在のスコア</p>
+                                <p class="text-xl font-mono font-black text-amber-400" id="ta-score">0000</p>
+                            </div>
+                            <div class="bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-2 font-mono">
+                                <i class="fa-solid fa-clock text-amber-500 animate-pulse"></i>
+                                <span class="font-bold text-lg text-amber-400" id="ta-timer">25s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar Timer -->
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="ta-timer-bar" class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 h-full w-full transition-all duration-100 ease-linear"></div>
+                    </div>
+
+                    <!-- Problem Area -->
+                    <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-800 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-brand-500/20 text-brand-400 border border-brand-500/30 text-[10px] font-bold px-2 py-0.5 rounded uppercase" id="ta-q-type">文法</span>
+                            <!-- Listen button limited to 3 plays -->
+                            <button id="ta-speak-btn" onclick="speakCurrentQuestion()" class="flex items-center gap-2 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-3 py-1.5 text-xs transition-colors">
+                                <i class="fa-solid fa-volume-high"></i> <span id="ta-speak-counter">音声を聞く (残り3回)</span>
+                            </button>
+                        </div>
+                        <!-- Question Text -->
+                        <div class="text-lg md:text-xl font-bold tracking-wide leading-relaxed font-mono">
+                            <span id="ta-phrase-before"></span>
+                            <span class="inline-block mx-2">
+                                <select id="ta-select-menu" class="bg-slate-900 border-2 border-amber-500 text-amber-300 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-amber-500 text-base font-bold transition-all cursor-pointer">
+                                    <!-- Dynamic Options go here -->
+                                </select>
+                            </span>
+                            <span id="ta-phrase-after"></span>
+                        </div>
+                        <p class="text-sm text-slate-400 border-t border-slate-800/80 pt-3 font-semibold" id="ta-translation">翻訳...</p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-3">
+                        <button onclick="submitAnswer()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-6 py-3 rounded-xl transition-all transform active:scale-95 text-sm">
+                            解答を送信する <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results State -->
+                <div id="ta-results" class="hidden text-center py-8 space-y-6">
+                    <div class="inline-block bg-amber-500/10 border-2 border-amber-400/30 p-8 rounded-full">
+                        <i class="fa-solid fa-trophy text-6xl text-amber-400 animate-bounce"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-3xl font-black text-amber-400 font-playful">チャレンジ完了！</h4>
+                        <p class="text-slate-400 text-sm mt-1">よくがんばりました！最高の結果です！</p>
+                    </div>
+
+                    <!-- Score display box -->
+                    <div class="max-w-xs mx-auto bg-slate-800/80 rounded-2xl p-5 border border-slate-700 shadow-inner">
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">今回の獲得スコア</p>
+                        <p class="text-4xl font-mono font-black text-amber-400 mt-1" id="ta-final-score">0 点</p>
+                        <p class="text-[11px] text-emerald-400 mt-2 font-semibold" id="ta-final-correct">正答数: 0/10</p>
+                    </div>
+
+                    <!-- Quick warning to write on whiteboard -->
+                    <div class="max-w-md mx-auto bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl text-xs text-amber-300">
+                        ⚠️ <strong>リマインダー:</strong> この得点を出席番号と一緒にホワイトボードに書き出しましょう！最低3回のチャレンジをクリアしてください。
+                    </div>
+
+                    <div class="flex justify-center gap-4">
+                        <button onclick="resetLobby()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition-all text-sm">
+                            <i class="fa-solid fa-rotate-left"></i> もう一度挑戦する
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORICAL ATTEMPTS TRACKER -->
+            <div id="history-container-block" class="bg-white rounded-3xl border-4 border-slate-200 p-6 md:p-8 shadow-sm space-y-4 relative">
+                <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-slate-100 text-slate-600 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm">
+                            <i class="fa-solid fa-history"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">挑戦記録履歴 (最低3回の挑戦を記録しよう)</h3>
+                            <p class="text-xs text-slate-500">Attempt History Tracker (Aim for at least 3 completions)</p>
+                        </div>
+                    </div>
+                    <span id="ta-attempt-count-badge" class="bg-brand-100 text-brand-700 text-xs px-2.5 py-1 rounded-full font-bold">挑戦数: 0回</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 uppercase font-black tracking-wide text-xs">
+                            <tr>
+                                <th class="p-3 rounded-l-xl">回数</th>
+                                <th class="p-3">クリア時刻</th>
+                                <th class="p-3">正解数</th>
+                                <th class="p-3 rounded-r-xl">獲得スコア</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ta-history-tbody">
+                            <tr>
+                                <td colspan="4" class="p-6 text-center text-slate-400">
+                                    まだ挑戦記録がありません。上のタイムアタックをスタートして最初のスコアを記録しましょう！
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Reset history button with safe confirmation UI instead of native confirm window -->
+                <div class="flex justify-end pt-2">
+                    <button id="btn-clear-history-trigger" onclick="toggleCustomConfirm(true)" class="text-slate-400 hover:text-rose-500 transition-colors text-xs font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> スコア履歴を消去する
+                    </button>
+                </div>
+
+                <!-- Custom Confirmation Dialogue Modal overlaying the container to prevent any alerts/confirms -->
+                <div id="custom-confirm-modal" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-3xl flex items-center justify-center p-6 z-30">
+                    <div class="bg-white rounded-2xl p-6 max-w-sm text-center shadow-2xl border-2 border-rose-100 space-y-4">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto text-xl">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-slate-800 text-lg">履歴をリセットしますか？</h4>
+                            <p class="text-slate-500 text-xs mt-1">これまでのすべてのタイムアタック挑戦履歴が消去されます。この操作は取り消せません。</p>
+                        </div>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="toggleCustomConfirm(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-all">
+                                キャンセル
+                            </button>
+                            <button onclick="confirmedClearHistory()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-rose-500/20">
+                                完全に消去する
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t-2 border-slate-100 py-6 text-center text-xs text-slate-400 font-semibold tracking-wide">
+        <p>© 2026 GRAMMAR MASTER BILINGUAL. ALL RIGHTS RESERVED.</p>
+        <p class="mt-1 text-[10px] text-slate-300">CREATED WITH PASSION FOR STUDENT EXCELLENCE • 全ての英語学習者に送る特別レッスン</p>
+    </footer>
+
+    <!-- JAVASCRIPT SYSTEM CONTROLLER -->
+    <script>
+        // App State
+        let currentUnit = 7;
+        let speechEnabled = true;
+        let scoreState = {
+            stars: 0,
+            completedTasks: new Set(),
+            unitProgress: {
+                7: 0,
+                8: 0
+            },
+            history: []
+        };
+
+        // Total questions per unit for percentage calculations
+        const totalUnitQuestions = {
+            7: 28, // 6 alibis + 8 fill in + 8 rewrites + 6 word orders
+            8: 17  // 7 future statements + 3 will queries + 3 going to queries + 4 future continuous
+        };
+
+        // Scramble Word Pools data
+        const scrambleData = {
+            '7d-1': {
+                pool: ['taking', 'I', 'was', 'a', 'bath'],
+                workspace: []
+            },
+            '7d-2': {
+                pool: ['something', 'she', 'looking', 'was', 'for'],
+                workspace: []
+            },
+            '7d-3': {
+                pool: ['on', 'my sister', 'the phone', 'talking', 'was'],
+                workspace: []
+            },
+            '7d-4': {
+                pool: ['painting', 'they', 'at that', 'were', 'the wall'],
+                workspace: []
+            },
+            '7d-5': {
+                pool: ['was', 'man', 'the gate', 'a', 'closing'],
+                workspace: []
+            },
+            '7d-6': {
+                pool: ['selling', 'some', 'were', 'their old clothes', 'people'],
+                workspace: []
+            },
+            '8-1': {
+                pool: ['be', 'on', 'I', 'dancing', 'the stage', 'will'],
+                workspace: []
+            },
+            '8-2': {
+                pool: ['be', 'the pool', 'Bill', 'swimming', 'in', 'will'],
+                workspace: []
+            },
+            '8-3': {
+                pool: ['will', 'taking', 'the students', 'at', 'the exam', 'be'],
+                workspace: []
+            },
+            '8-4': {
+                pool: ['preparing', 'will', 'the festival', 'at', 'we', 'for', 'be', 'this time'],
+                workspace: []
+            }
+        };
+
+        // Suspect Key Answers for Detective Game (Unit 7A)
+        const alibiKeys = {
+            'tom': 'was repairing',
+            'yuka': 'was reading',
+            'ken': 'was taking',
+            'shelly': 'was studying',
+            'beth': 'was walking',
+            'linda': 'was riding'
+        };
+
+        // ============================================
+        // TIME ATTACK GAME STATE VARIABLES
+        // ============================================
+        let taQuestions = [
+            {
+                before: "Andy",
+                after: "with Dr. House at the hospital when the storm began.",
+                translation: "嵐が始まったとき，アンディーは病院でハウス先生と会っていました。",
+                options: ["was meeting", "were meeting", "meets", "meeting"],
+                correct: "was meeting",
+                type: "Unit 7 (Past Cont.)"
+            },
+            {
+                before: "What",
+                after: "you doing around four yesterday?",
+                translation: "昨日の4時ごろ、あなたは何をしていましたか？",
+                options: ["were", "was", "did", "are"],
+                correct: "were",
+                type: "Unit 7 (Past Cont.)"
+            },
+            {
+                before: "Lucy",
+                after: "the DVD tonight.",
+                translation: "ルーシーは今夜そのDVDを見るだろう。",
+                options: ["will watch", "watch", "is watch", "going watch"],
+                correct: "will watch",
+                type: "Unit 8 (Future)"
+            },
+            {
+                before: "We’re going",
+                after: "move next week.",
+                translation: "私たちは来週，引っ越すつもりだ。",
+                options: ["to", "for", "will", "at"],
+                correct: "to",
+                type: "Unit 8 (Future)"
+            },
+            {
+                before: "My brother and I",
+                after: "cleaning our house at 7 a.m. yesterday.",
+                translation: "昨日の午前7時に，兄と私は家を掃除していた。",
+                options: ["were", "was", "are", "been"],
+                correct: "were",
+                type: "Unit 7 (Past Cont.)"
+            },
+            {
+                before: "My brother",
+                after: "using my computer when I needed it.",
+                translation: "私が自分のコンピュータが必要だったとき，弟がそれを使っていた。",
+                options: ["was", "were", "is", "using"],
+                correct: "was",
+                type: "Unit 7 (Past Cont.)"
+            },
+            {
+                before: "Everything",
+                after: "go well.",
+                translation: "すべてはうまくいくだろう。",
+                options: ["will", "is going", "does", "be"],
+                correct: "will",
+                type: "Unit 8 (Future)"
+            },
+            {
+                before: "",
+                after: "Koji return to his hometown? No, he won't.",
+                translation: "コウジはふるさとに戻るでしょうか。― いいえ，戻らないでしょう。",
+                options: ["Will", "Is", "Does", "Are"],
+                correct: "Will",
+                type: "Unit 8 (Future Interrog.)"
+            },
+            {
+                before: "Is Tom going",
+                after: "a teacher?",
+                translation: "トムは教師になるつもりですか。",
+                options: ["to be", "be", "being", "to being"],
+                correct: "to be",
+                type: "Unit 8 (be going to)"
+            },
+            {
+                before: "He",
+                after: "playing soccer at this time tomorrow.",
+                translation: "彼は明日のこの時間には，サッカーをしているだろう。",
+                options: ["will be", "will", "is going to", "was"],
+                correct: "will be",
+                type: "Unit 8 (Future Cont.)"
+            }
+        ];
+
+        let currentTaIndex = 0;
+        let taScore = 0;
+        let taCorrectCount = 0;
+        let taTimerVal = 25;
+        let taTimerInterval = null;
+        let taSpeakCount = 3; // Maximum 3 speech plays per problem
+
+        // ON LOAD INITIALIZER
+        window.onload = function() {
+            // Restore from localStorage if existing
+            const savedState = localStorage.getItem('grammar_master_state');
+            if (savedState) {
+                try {
+                    const parsed = JSON.parse(savedState);
+                    scoreState.stars = parsed.stars || 0;
+                    scoreState.completedTasks = new Set(parsed.completedTasks || []);
+                    scoreState.unitProgress = parsed.unitProgress || { 7: 0, 8: 0 };
+                    scoreState.history = parsed.history || [];
+                } catch (e) {
+                    console.error("Failed to parse saved state", e);
+                }
+            }
+            
+            // Build word scramble boards
+            Object.keys(scrambleData).forEach(id => {
+                resetScramble(id);
+            });
+
+            updateUIProgress();
+            renderAttemptHistory();
+        };
+
+        // Text-to-Speech Synthesizer helper
+        function speakText(text) {
+            if (!speechEnabled) return;
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85; // slightly slower for language learners
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Toggle Audio
+        function toggleAudio() {
+            speechEnabled = !speechEnabled;
+            const icon = document.getElementById('tts-icon');
+            if (speechEnabled) {
+                icon.className = "fa-solid fa-volume-high";
+                icon.parentElement.classList.remove('text-rose-500', 'border-rose-200');
+            } else {
+                icon.className = "fa-solid fa-volume-xmark";
+                icon.parentElement.classList.add('text-rose-500', 'border-rose-200');
+            }
+        }
+
+        // Tab switching
+        function switchUnit(unitNum) {
+            currentUnit = unitNum;
+            const btn7 = document.getElementById('btn-unit-7');
+            const btn8 = document.getElementById('btn-unit-8');
+            const btnTA = document.getElementById('btn-unit-time-attack');
+            
+            const panel7 = document.getElementById('unit-7-panel');
+            const panel8 = document.getElementById('unit-8-panel');
+            const panelTA = document.getElementById('unit-time-attack-panel');
+
+            // Reset tab highlights
+            btn7.className = "group relative overflow-hidden bg-white hover:bg-sky-50/50 p-6 rounded-3xl border-4 border-slate-200 transition-all duration-300 text-left custom-shadow";
+            btn8.className = "group relative overflow-hidden bg-white hover:bg-violet-50/50 p-6 rounded-3xl border-4 border-slate-200 transition-all duration-300 text-left custom-shadow";
+            btnTA.className = "group relative overflow-hidden bg-white hover:bg-amber-50/50 p-6 rounded-3xl border-4 border-slate-200 transition-all duration-300 text-left custom-shadow";
+
+            panel7.classList.add('hidden');
+            panel8.classList.add('hidden');
+            panelTA.classList.add('hidden');
+
+            if (unitNum === 7) {
+                btn7.className = "group relative overflow-hidden bg-white hover:bg-sky-50/50 p-6 rounded-3xl border-4 border-brand-500 transition-all duration-300 text-left custom-shadow active-card";
+                panel7.classList.remove('hidden');
+            } else if (unitNum === 8) {
+                btn8.className = "group relative overflow-hidden bg-white hover:bg-violet-50/50 p-6 rounded-3xl border-4 border-violet-500 transition-all duration-300 text-left custom-shadow active-card";
+                panel8.classList.remove('hidden');
+            } else if (unitNum === 'time-attack') {
+                btnTA.className = "group relative overflow-hidden bg-white hover:bg-amber-50/50 p-6 rounded-3xl border-4 border-amber-500 transition-all duration-300 text-left custom-shadow active-card";
+                panelTA.classList.remove('hidden');
+                // Auto reset state on switching to Lobby
+                resetLobby();
+            }
+            updateUIProgress();
+        }
+
+        // Add progress points safely
+        function recordCorrect(taskId) {
+            if (!scoreState.completedTasks.has(taskId)) {
+                scoreState.completedTasks.add(taskId);
+                scoreState.stars += 5; // Add stars
+                
+                triggerConfettiQuick();
+                updateUIProgress();
+                saveStateToLocal();
+            }
+        }
+
+        // Save progress to client storage
+        function saveStateToLocal() {
+            const data = {
+                stars: scoreState.stars,
+                completedTasks: Array.from(scoreState.completedTasks),
+                unitProgress: scoreState.unitProgress,
+                history: scoreState.history
+            };
+            localStorage.setItem('grammar_master_state', JSON.stringify(data));
+        }
+
+        // Confetti explosion
+        function triggerConfettiQuick() {
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.8 }
+            });
+        }
+
+        function triggerConfettiGrand() {
+            let duration = 3 * 1000;
+            let end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // UI Progress calculator
+        function updateUIProgress() {
+            let u7Done = 0;
+            let u8Done = 0;
+
+            scoreState.completedTasks.forEach(task => {
+                if (task.startsWith('u7-')) u7Done++;
+                if (task.startsWith('u8-')) u8Done++;
+            });
+
+            const u7Percent = Math.min(100, Math.round((u7Done / totalUnitQuestions[7]) * 100));
+            const u8Percent = Math.min(100, Math.round((u8Done / totalUnitQuestions[8]) * 100));
+
+            scoreState.unitProgress[7] = u7Percent;
+            scoreState.unitProgress[8] = u8Percent;
+
+            // Update DOM badges
+            document.getElementById('unit-7-badge').innerText = `${u7Percent}%`;
+            document.getElementById('unit-8-badge').innerText = `${u8Percent}%`;
+            document.getElementById('star-count').innerText = scoreState.stars;
+
+            // Global average
+            const totalDone = u7Done + u8Done;
+            const totalQuestions = totalUnitQuestions[7] + totalUnitQuestions[8];
+            const globalPercent = Math.min(100, Math.round((totalDone / totalQuestions) * 100));
+
+            document.getElementById('progress-percent').innerText = `${globalPercent}%`;
+            document.getElementById('global-progress-bar').style.width = `${globalPercent}%`;
+
+            if (globalPercent === 100 && !scoreState.completedTasks.has('trophy_master_100')) {
+                scoreState.completedTasks.add('trophy_master_100');
+                triggerConfettiGrand();
+                saveStateToLocal();
+            }
+        }
+
+        // CHECK EXERCISE A: Suspect Alibis
+        function checkAlibi(suspectId) {
+            const rawInput = document.getElementById(`input-${suspectId}`).value.trim().toLowerCase();
+            const correctText = alibiKeys[suspectId];
+            const card = document.getElementById(`card-${suspectId}`);
+            const badge = document.getElementById(`badge-${suspectId}`);
+
+            if (rawInput === correctText) {
+                card.className = "bg-emerald-50 border-4 border-emerald-400 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all duration-300 correct-bg";
+                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-xl"></i>`;
+                speakText(`Tom was meeting his target: I ${correctText}`);
+                recordCorrect(`u7-alibi-${suspectId}`);
+            } else {
+                card.className = "bg-rose-50 border-4 border-rose-300 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all duration-300";
+                badge.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500 text-xl"></i>`;
+                document.getElementById(`input-${suspectId}`).classList.add('border-rose-500', 'text-rose-600');
+                setTimeout(() => {
+                    document.getElementById(`input-${suspectId}`).classList.remove('border-rose-500', 'text-rose-600');
+                }, 1500);
+            }
+        }
+
+        // CHECK EXERCISE B: Fill-in-the-blank matches
+        function checkB(index, expectedArray) {
+            const valA = document.getElementById(`b-${index}-a`).value.trim().toLowerCase();
+            const valB = document.getElementById(`b-${index}-b`).value.trim().toLowerCase();
+            const row = document.getElementById(`row-b-${index}`);
+
+            if (valA === expectedArray[0] && valB === expectedArray[1]) {
+                row.className = "p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 correct-bg";
+                recordCorrect(`u7-b-${index}`);
+            } else {
+                row.className = "p-4 rounded-2xl border-2 border-rose-300 bg-rose-50/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300";
+            }
+        }
+
+        // Special Checker for Fill-in validation with alternatives
+        function checkBWithAlternatives(index, expectedWithAlts) {
+            const valA = document.getElementById(`b-${index}-a`).value.trim().toLowerCase();
+            const valB = document.getElementById(`b-${index}-b`).value.trim().toLowerCase();
+            const row = document.getElementById(`row-b-${index}`);
+
+            const standardA = expectedWithAlts[0];
+            const possibleB = expectedWithAlts[1]; // Array of alternatives
+
+            if (valA === standardA && possibleB.includes(valB)) {
+                row.className = "p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 correct-bg";
+                recordCorrect(`u7-b-${index}`);
+            } else {
+                row.className = "p-4 rounded-2xl border-2 border-rose-300 bg-rose-50/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300";
+            }
+        }
+
+        // CHECK EXERCISE C: Past simple -> Past continuous
+        function checkC(index, expectedPhrase) {
+            const userVal = document.getElementById(`input-c-${index}`).value.trim().replace(/\s+/g, ' ');
+            const wrapper = document.getElementById(`wrapper-c-${index}`);
+
+            const cleanUser = userVal.toLowerCase().replace(/\.$/, '').trim();
+            const cleanExpected = expectedPhrase.toLowerCase().replace(/\.$/, '').trim();
+
+            if (cleanUser === cleanExpected) {
+                wrapper.className = "border-2 border-emerald-300 p-4 rounded-2xl bg-emerald-50/50 transition-all duration-300 correct-bg";
+                speakText(expectedPhrase);
+                recordCorrect(`u7-c-${index}`);
+            } else {
+                wrapper.className = "border-2 border-rose-300 p-4 rounded-2xl bg-rose-50/40 transition-all duration-300";
+                document.getElementById(`input-c-${index}`).classList.add('border-rose-400');
+                setTimeout(() => {
+                    document.getElementById(`input-c-${index}`).classList.remove('border-rose-400');
+                }, 1500);
+            }
+        }
+
+        // CHECK EXERCISE 8-1, 8-2, 8-3: Generic multiple-blanks validator
+        function checkMultipleBlanks(keyPrefix, expectedArray) {
+            let matchesAll = true;
+            const letters = ['a', 'b', 'c', 'd'];
+            
+            for (let i = 0; i < expectedArray.length; i++) {
+                const elementId = `${keyPrefix}-${letters[i]}`;
+                const userVal = document.getElementById(elementId).value.trim().toLowerCase();
+                const targetVal = expectedArray[i].toLowerCase();
+
+                if (userVal !== targetVal) {
+                    matchesAll = false;
+                    document.getElementById(elementId).classList.add('text-rose-600', 'border-rose-400');
+                    setTimeout(() => {
+                        document.getElementById(elementId).classList.remove('text-rose-600', 'border-rose-400');
+                    }, 1500);
+                } else {
+                    document.getElementById(elementId).classList.add('text-emerald-700', 'border-emerald-400');
+                }
+            }
+
+            const row = document.getElementById(`row-${keyPrefix}`);
+            if (matchesAll) {
+                row.className = "p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 correct-bg";
+                recordCorrect(`u8-${keyPrefix}`);
+            } else {
+                row.className = "p-4 rounded-2xl border-2 border-rose-300 bg-rose-50/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300";
+            }
+        }
+
+        // Special validator for Unit 8 Question 3-2 because of option: 'be' or 'become'
+        function check832() {
+            const valA = document.getElementById('8-3-2-a').value.trim().toLowerCase(); // Is
+            const valB = document.getElementById('8-3-2-b').value.trim().toLowerCase(); // going
+            const valC = document.getElementById('8-3-2-c').value.trim().toLowerCase(); // be or become
+            const valD = document.getElementById('8-3-2-d').value.trim().toLowerCase(); // isn't
+            const row = document.getElementById('row-8-3-2');
+
+            if (valA === 'is' && valB === 'going' && (valC === 'be' || valC === 'become') && valD === "isn't") {
+                row.className = "p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 correct-bg";
+                recordCorrect('u8-8-3-2');
+            } else {
+                row.className = "p-4 rounded-2xl border-2 border-rose-300 bg-rose-50/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300";
+            }
+        }
+
+        // WORD SCRAMBLER GAMEPLAY ENGINE
+        function resetScramble(id) {
+            scrambleData[id].workspace = [];
+            
+            const initialPool = [...scrambleData[id].pool];
+            scrambleData[id].workspace = [];
+            
+            // Fisher-Yates Shuffle
+            for (let i = initialPool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [initialPool[i], initialPool[j]] = [initialPool[j], initialPool[i]];
+            }
+
+            renderScrambleUI(id, initialPool);
+            
+            const block = document.getElementById(`scramble-block-${id}`);
+            block.className = "space-y-3 p-3 rounded-2xl border-2 border-slate-100 transition-colors";
+        }
+
+        function renderScrambleUI(id, currentPool) {
+            const poolContainer = document.getElementById(`pool-${id}`);
+            const workspaceContainer = document.getElementById(`workspace-${id}`);
+
+            poolContainer.innerHTML = '';
+            workspaceContainer.innerHTML = '';
+
+            // Draw current pool chips
+            currentPool.forEach((word, index) => {
+                const btn = document.createElement('button');
+                btn.className = "word-chip bg-white border-2 border-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-xl shadow-sm text-sm hover:border-brand-400 active:scale-95";
+                btn.innerText = word;
+                btn.onclick = () => selectWord(id, word, currentPool);
+                poolContainer.appendChild(btn);
+            });
+
+            // Draw current workspace chips
+            scrambleData[id].workspace.forEach((word, index) => {
+                const btn = document.createElement('button');
+                btn.className = "word-chip bg-brand-500 border-2 border-brand-600 text-white font-bold px-3 py-1.5 rounded-xl shadow-md text-sm hover:bg-brand-600";
+                btn.innerText = word;
+                btn.onclick = () => deselectWord(id, word, currentPool);
+                workspaceContainer.appendChild(btn);
+            });
+        }
+
+        function selectWord(id, word, currentPool) {
+            scrambleData[id].workspace.push(word);
+            const matchIndex = currentPool.indexOf(word);
+            if (matchIndex > -1) {
+                currentPool.splice(matchIndex, 1);
+            }
+            renderScrambleUI(id, currentPool);
+        }
+
+        function deselectWord(id, word, currentPool) {
+            const matchIndex = scrambleData[id].workspace.indexOf(word);
+            if (matchIndex > -1) {
+                scrambleData[id].workspace.splice(matchIndex, 1);
+            }
+            currentPool.push(word);
+            renderScrambleUI(id, currentPool);
+        }
+
+        function checkScramble(id, targetSentence) {
+            const joinedWorkspace = scrambleData[id].workspace.join(' ').trim().toLowerCase();
+            const cleanTarget = targetSentence.trim().toLowerCase();
+            const block = document.getElementById(`scramble-block-${id}`);
+
+            if (joinedWorkspace === cleanTarget) {
+                block.className = "space-y-3 p-3 rounded-2xl border-4 border-emerald-400 bg-emerald-50/30 transition-all duration-300 correct-bg";
+                speakText(targetSentence);
+                const unitCode = id.startsWith('7d-') ? 'u7' : 'u8';
+                recordCorrect(`${unitCode}-scramble-${id}`);
+            } else {
+                block.className = "space-y-3 p-3 rounded-2xl border-4 border-rose-300 bg-rose-50/20 transition-all duration-300";
+                setTimeout(() => {
+                    block.className = "space-y-3 p-3 rounded-2xl border-2 border-slate-100 transition-colors";
+                }, 1500);
+            }
+        }
+
+        // ============================================
+        // TIME ATTACK SYSTEM MECHANICS
+        // ============================================
+        
+        // Reset Time Attack Lobby screen
+        function resetLobby() {
+            clearInterval(taTimerInterval);
+            document.getElementById('ta-lobby').className = "text-center py-10 space-y-6";
+            document.getElementById('ta-game').className = "hidden";
+            document.getElementById('ta-results').className = "hidden";
+            currentTaIndex = 0;
+            taScore = 0;
+            taCorrectCount = 0;
+            taSpeakCount = 3; 
+        }
+
+        // Start active quiz
+        function startQuiz() {
+            document.getElementById('ta-lobby').className = "hidden";
+            document.getElementById('ta-game').className = "space-y-6";
+            document.getElementById('ta-results').className = "hidden";
+            
+            currentTaIndex = 0;
+            taScore = 0;
+            taCorrectCount = 0;
+            
+            // Shuffle questions pool dynamically for fresh runs
+            for (let i = taQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [taQuestions[i], taQuestions[j]] = [taQuestions[j], taQuestions[i]];
+            }
+
+            loadTaQuestion();
+        }
+
+        // Load specific quiz question
+        function loadTaQuestion() {
+            if (currentTaIndex >= 10) {
+                finishTaQuiz();
+                return;
+            }
+
+            const q = taQuestions[currentTaIndex];
+            document.getElementById('ta-q-num').innerText = `Q ${currentTaIndex + 1}/10`;
+            document.getElementById('ta-q-type').innerText = q.type;
+            document.getElementById('ta-phrase-before').innerText = q.before;
+            document.getElementById('ta-phrase-after').innerText = q.after;
+            document.getElementById('ta-translation').innerText = q.translation;
+            document.getElementById('ta-score').innerText = String(taScore).padStart(4, '0');
+
+            // Reset speak counter for new question (Max 3 plays)
+            taSpeakCount = 3;
+            updateTaSpeakButton();
+
+            // Render select dropdown options
+            const selectMenu = document.getElementById('ta-select-menu');
+            selectMenu.innerHTML = '<option value="" disabled selected>選択してください...</option>';
+            
+            // Shuffle options
+            let shuffledOpts = [...q.options];
+            for (let i = shuffledOpts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledOpts[i], shuffledOpts[j]] = [shuffledOpts[j], shuffledOpts[i]];
+            }
+
+            shuffledOpts.forEach(opt => {
+                const optEl = document.createElement('option');
+                optEl.value = opt;
+                optEl.innerText = opt;
+                selectMenu.appendChild(optEl);
+            });
+
+            // Start 25s Countdown clock
+            taTimerVal = 25;
+            document.getElementById('ta-timer').innerText = `${taTimerVal}秒`;
+            document.getElementById('ta-timer-bar').style.width = '100%';
+            
+            clearInterval(taTimerInterval);
+            taTimerInterval = setInterval(() => {
+                taTimerVal--;
+                document.getElementById('ta-timer').innerText = `${taTimerVal}秒`;
+                
+                // Update ticking bar percentage
+                const barPercent = (taTimerVal / 25) * 100;
+                document.getElementById('ta-timer-bar').style.width = `${barPercent}%`;
+
+                if (taTimerVal <= 0) {
+                    clearInterval(taTimerInterval);
+                    submitAnswer(true); // Forced timeout submission
+                }
+            }, 1000);
+        }
+
+        // Speak active question text helper (Max 3 plays allowed)
+        function speakCurrentQuestion() {
+            if (taSpeakCount <= 0) return;
+            
+            const q = taQuestions[currentTaIndex];
+            const cleanText = `${q.before} ${q.correct} ${q.after}`;
+            speakText(cleanText);
+
+            taSpeakCount--;
+            updateTaSpeakButton();
+        }
+
+        // Updates TTS speak limit button label and styles
+        function updateTaSpeakButton() {
+            const btn = document.getElementById('ta-speak-btn');
+            const label = document.getElementById('ta-speak-counter');
+
+            if (taSpeakCount > 0) {
+                btn.disabled = false;
+                btn.className = "flex items-center gap-2 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-3 py-1.5 text-xs transition-colors cursor-pointer";
+                label.innerText = `音声を聞く (残り${taSpeakCount}回)`;
+            } else {
+                btn.disabled = true;
+                btn.className = "flex items-center gap-2 text-slate-600 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs transition-colors cursor-not-allowed opacity-50";
+                label.innerText = `再生数上限に達しました`;
+            }
+        }
+
+        // Submit answers with time-based point allocation
+        function submitAnswer(isTimeout = false) {
+            clearInterval(taTimerInterval);
+
+            const q = taQuestions[currentTaIndex];
+            const selectMenu = document.getElementById('ta-select-menu');
+            const selectedVal = selectMenu.value;
+
+            let earnedPoints = 0;
+            let isCorrect = false;
+
+            if (!isTimeout && selectedVal === q.correct) {
+                isCorrect = true;
+                taCorrectCount++;
+
+                // Falling scale points engine (fastest answers = 5 points)
+                if (taTimerVal >= 20) {
+                    earnedPoints = 5; // answered inside 0-5s
+                } else if (taTimerVal >= 15) {
+                    earnedPoints = 4; // answered inside 5-10s
+                } else if (taTimerVal >= 10) {
+                    earnedPoints = 3; // answered inside 10-15s
+                } else if (taTimerVal >= 5) {
+                    earnedPoints = 2; // answered inside 15-20s
+                } else {
+                    earnedPoints = 1; // answered inside 20-25s
+                }
+                taScore += earnedPoints;
+                triggerConfettiQuick();
+            }
+
+            // Quick flashing feedback on current elements before loading next
+            const gameCard = document.getElementById('ta-game');
+            if (isCorrect) {
+                gameCard.classList.add('border-emerald-500');
+                setTimeout(() => gameCard.classList.remove('border-emerald-500'), 500);
+            } else {
+                gameCard.classList.add('border-rose-500');
+                setTimeout(() => gameCard.classList.remove('border-rose-500'), 500);
+            }
+
+            // Progress to next question
+            currentTaIndex++;
+            setTimeout(() => {
+                loadTaQuestion();
+            }, 600);
+        }
+
+        // Complete quiz and log attempt metrics
+        function finishTaQuiz() {
+            clearInterval(taTimerInterval);
+            document.getElementById('ta-game').className = "hidden";
+            document.getElementById('ta-results').className = "text-center py-8 space-y-6";
+
+            document.getElementById('ta-final-score').innerText = `${taScore} 点`;
+            document.getElementById('ta-final-correct').innerText = `正解数: ${taCorrectCount} / 10`;
+
+            // Record history attempt safely
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const attemptNumber = scoreState.history.length + 1;
+
+            scoreState.history.push({
+                attempt: attemptNumber,
+                time: timestamp,
+                correct: `${taCorrectCount}/10`,
+                score: taScore
+            });
+
+            saveStateToLocal();
+            renderAttemptHistory();
+            
+            // Grand celebratory burst if perfect score
+            if (taScore >= 45) {
+                triggerConfettiGrand();
+            }
+        }
+
+        // Render logs of attempts
+        function renderAttemptHistory() {
+            const tbody = document.getElementById('ta-history-tbody');
+            const badge = document.getElementById('ta-attempt-count-badge');
+
+            badge.innerText = `挑戦数: ${scoreState.history.length}回`;
+
+            if (scoreState.history.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="p-6 text-center text-slate-400">
+                            まだ挑戦記録がありません。上のタイムアタックをスタートして最初のスコアを記録しましょう！
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            // Display newest attempts at top
+            const reversedHistory = [...scoreState.history].reverse();
+            reversedHistory.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-700">第 ${item.attempt} 回目の挑戦</td>
+                    <td class="p-3 text-slate-500 font-mono">${item.time}</td>
+                    <td class="p-3 font-bold text-slate-700">${item.correct} 正解</td>
+                    <td class="p-3 font-black text-amber-600 font-mono text-base">${item.score} 点</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Custom Confirm Dialogue Toggler (Respecting No-Alert/Confirm rule)
+        function toggleCustomConfirm(show) {
+            const modal = document.getElementById('custom-confirm-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Execute cleared actions on accepted custom click
+        function confirmedClearHistory() {
+            scoreState.history = [];
+            saveStateToLocal();
+            renderAttemptHistory();
+            toggleCustomConfirm(false);
+        }
+    </script>
+</body>
+</html>
